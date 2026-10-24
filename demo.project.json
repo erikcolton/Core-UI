@@ -1,0 +1,18 @@
+{
+  "name": "CoreUI Demo",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "CoreUI": {
+        "$path": "src/CoreUI"
+      }
+    },
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "CoreUIDemo": {
+          "$path": "src/Demo/CoreUIDemo.client.luau"
+        }
+      }
+    }
+  }
+}
