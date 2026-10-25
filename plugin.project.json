@@ -1,0 +1,15 @@
+{
+  "name": "CoreUICustomizer",
+  "tree": {
+    "$path": "src/Plugin",
+    "CoreUI": {
+      "$path": "src/CoreUI"
+    },
+    "CoreUIDemo": {
+      "$path": "src/Demo/CoreUIDemo.client.luau",
+      "$properties": {
+        "Disabled": true
+      }
+    }
+  }
+}

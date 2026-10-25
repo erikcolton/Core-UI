@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install tools
+        run: |
+          mkdir -p "$HOME/bin"
+          cd "$HOME/bin"
+          curl -sSLO https://github.com/rojo-rbx/rojo/releases/download/v7.4.4/rojo-7.4.4-linux-x86_64.zip
+          curl -sSLO https://github.com/JohnnyMorganz/StyLua/releases/download/v2.0.2/stylua-linux-x86_64.zip
+          curl -sSLO https://github.com/lune-org/lune/releases/download/v0.8.9/lune-0.8.9-linux-x86_64.zip
+          for f in *.zip; do unzip -o -q "$f"; done
+          chmod +x rojo stylua lune
+          echo "$HOME/bin" >> "$GITHUB_PATH"
+
+      - name: Formatting
+        run: stylua --check src tests
+
+      - name: Tests
+        run: lune run tests/run
+
+      - name: Build
+        run: |
+          mkdir -p build
+          rojo build plugin.project.json -o build/CoreUICustomizer.rbxm
+          rojo build default.project.json -o build/CoreUI.rbxm
+          rojo build demo.project.json -o build/CoreUIDemo.rbxl
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: core-ui-builds
+          path: build/

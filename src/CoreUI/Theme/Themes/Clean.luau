@@ -95,12 +95,17 @@ return {
 	},
 
 	buttons = {
-		gradient = false, -- two-tone fill with a hard stop
-		highlight = 0.18, -- how much lighter the top half is when gradient is on
+		fill = "flat", -- "flat", "twoTone" (hard stop in the middle) or "gradient" (smooth)
+		highlight = 0.18, -- how much lighter the top is for twoTone and gradient fills
 		heights = { sm = 34, md = 46, lg = 58 },
 		widths = { sm = 104, md = 156, lg = 216 },
 		textSizes = { sm = 15, md = 18, lg = 22 },
 		font = "heading",
+	},
+
+	-- Extra surface effects.
+	effects = {
+		panelGradient = 0, -- 0 = flat panels; up to ~0.4 lightens the top of each panel
 	},
 
 	spacing = {
@@ -120,6 +125,7 @@ return {
 		hoverScale = 1.03,
 		pressScale = 0.96,
 		openFrom = 0.9, -- window scale when it starts opening
+		openStyle = "pop", -- how windows and dialogs appear: "pop", "slide" or "none"
 	},
 
 	-- Each layer gets one UIScale: min(viewport / referenceSize), clamped.

@@ -52,12 +52,7 @@ function ProgressBar.new(props: { [string]: any }?)
 		Style.corner(track, theme.radius.pill)
 		Style.stroke(track, theme.stroke.control, theme.colors.stroke)
 		Style.corner(self._fill, theme.radius.pill)
-		Style.fill(
-			self._fill,
-			Style.color(theme, self.Color, "primary"),
-			theme.buttons.gradient,
-			theme.buttons.highlight
-		)
+		Style.fill(self._fill, Style.color(theme, self.Color, "primary"), theme.buttons.fill, theme.buttons.highlight)
 		Style.text(self._label, theme, "caption", true)
 		-- Outlined themes read best with light text; without an outline, use body text color.
 		self._label.TextColor3 = if theme.stroke.text > 0 then theme.colors.textInverse else theme.colors.text
@@ -98,7 +93,7 @@ end
 function ProgressBar:SetColor(color: string | Color3)
 	self.Color = color
 	local theme = Theme.get()
-	Style.fill(self._fill, Style.color(theme, color, "primary"), theme.buttons.gradient, theme.buttons.highlight)
+	Style.fill(self._fill, Style.color(theme, color, "primary"), theme.buttons.fill, theme.buttons.highlight)
 end
 
 function ProgressBar:Destroy()

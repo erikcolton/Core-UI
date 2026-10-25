@@ -25,6 +25,11 @@ local SPECS = {
 
 local guis: { [string]: ScreenGui } = {}
 
+-- Where layers go. nil = the local player's PlayerGui. Tools such as the Studio
+-- plugin point this somewhere else (CoreGui) to show the kit outside a play session.
+local customParent: Instance? = nil
+local namePrefix = "CoreUI_"
+
 local function computeScale(size: Vector2): number
 	local layout = Theme.get().layout
 	local ref = layout.referenceSize
@@ -52,23 +57,44 @@ function Layers.get(name: string): ScreenGui
 	local spec = SPECS[name]
 	assert(spec, "CoreUI: unknown layer " .. tostring(name))
 
-	local player = Players.LocalPlayer
-	assert(player, "CoreUI: layers can only be created on the client")
-	local playerGui = player:WaitForChild("PlayerGui")
+	local parent = customParent
+	if not parent then
+		local player = Players.LocalPlayer
+		assert(player, "CoreUI: layers can only be created on the client")
+		parent = player:WaitForChild("PlayerGui")
+	end
 
 	local gui = Create("ScreenGui", {
-		Name = "CoreUI_" .. name,
+		Name = namePrefix .. name,
 		DisplayOrder = spec.order,
 		ResetOnSpawn = false,
-		IgnoreGuiInset = not spec.safe,
-		ScreenInsets = if spec.safe then Enum.ScreenInsets.CoreUISafeInsets else Enum.ScreenInsets.None,
 		ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
 	})
+	-- IgnoreGuiInset and ScreenInsets are linked, so set them in this order.
+	gui.IgnoreGuiInset = not spec.safe
+	gui.ScreenInsets = if spec.safe then Enum.ScreenInsets.CoreUISafeInsets else Enum.ScreenInsets.None
 	local uiScale = Create("UIScale", { Name = "Scale", Parent = gui })
-	gui.Parent = playerGui
+	gui.Parent = parent
 	track(gui, uiScale)
 	guis[name] = gui
 	return gui
+end
+
+--[[
+	Send layers somewhere other than PlayerGui. Call before anything is created.
+
+		Layers.configure({ Parent = game:GetService("CoreGui"), Prefix = "MyTool_" })
+]]
+function Layers.configure(options: { Parent: Instance?, Prefix: string? })
+	customParent = options.Parent
+	namePrefix = options.Prefix or namePrefix
+end
+
+-- Show or hide every layer at once.
+function Layers.setEnabled(enabled: boolean)
+	for _, gui in guis do
+		gui.Enabled = enabled
+	end
 end
 
 -- Current scale of a layer, for converting screen pixels into reference pixels.

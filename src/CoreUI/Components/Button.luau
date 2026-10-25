@@ -213,7 +213,7 @@ function Button:_style(theme: any)
 
 	local skinned = (not ghost) and Style.skin(face, theme.images.button, base)
 	face.BackgroundTransparency = if ghost or skinned then 1 else 0
-	Style.fill(face, base, tokens.gradient and not ghost and not skinned, tokens.highlight)
+	Style.fill(face, base, if ghost or skinned then "flat" else tokens.fill, tokens.highlight)
 
 	local strokeThickness = if ghost then math.max(theme.stroke.control, 1) else theme.stroke.control
 	Style.stroke(face, if skinned then 0 else strokeThickness, theme.colors.stroke)

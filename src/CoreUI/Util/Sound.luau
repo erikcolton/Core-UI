@@ -3,6 +3,7 @@
 	active theme has no id for that sound.
 ]]
 
+local RunService = game:GetService("RunService")
 local SoundService = game:GetService("SoundService")
 
 local Create = require(script.Parent.Create)
@@ -19,8 +20,14 @@ function Sound.play(key: string)
 		return
 	end
 	local sound = cache[id]
-	if not sound or not sound.Parent then
-		sound = Create("Sound", { Name = "CoreUI_" .. key, SoundId = id, Parent = SoundService })
+	if not sound or (not sound.Parent and RunService:IsRunning()) then
+		-- Outside a play session (the Studio plugin's previews) the sound stays
+		-- unparented, so nothing is added to the place being edited.
+		sound = Create("Sound", {
+			Name = "CoreUI_" .. key,
+			SoundId = id,
+			Parent = if RunService:IsRunning() then SoundService else nil,
+		})
 		cache[id] = sound
 	end
 	sound.Volume = sounds.volume or 0.5

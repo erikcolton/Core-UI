@@ -42,7 +42,7 @@ Screens that are windows register with the Manager under `Id` (defaults shown), 
 | `Settings` | `Settings` | `Options` ({ Id, Text, Description, Type = toggle, slider or choice, Default, Min, Max, Step, Choices }), `OnChanged(id, value)` | `Get`, `Set(id, value, silent?)`, `Changed` |
 | `DailyRewards` | `DailyRewards` | `Rewards` ({ Text, Image }), `Claimed`, `CanClaim`, `NextIn`, `OnClaim(day)` | `SetState({ Claimed, CanClaim, NextIn })` |
 | `Codes` | `Codes` | `OnRedeem(code) -> ok, message`, `Description`, `Placeholder` | `Redeem`, `SetStatus` |
-| `Dialog` | (module) | | `Dialog.confirm(options) -> boolean`, `Dialog.alert(options)`; both yield |
+| `Dialog` | (module) | | `Dialog.confirm(options) -> boolean`, `Dialog.alert(options)`; both yield. `Dialog.dismissAll()` cancels open dialogs |
 | `Notifications` | (module) | | `push({ Title, Text, Kind, Duration })`, `info`, `success`, `warning`, `error` |
 | `LoadingScreen` | none | `Title`, `Tips`, `TipInterval`, `Background`, `Status` | `SetProgress(ratio, status?)`, `Finish()` |
 | `MainMenu` | none | `Title`, `Subtitle`, `Background`, `Buttons` ({ Text, Variant, Play or Screen or OnClick }), `OnPlay` | `Show`, `Hide`, `Play`, `Played` |
@@ -72,3 +72,5 @@ Each layer is its own ScreenGui, created on first use:
 | Dialogs | 30 | no | Dialog |
 | Toasts | 40 | yes | Notifications |
 | Overlay | 50 | no | LoadingScreen, Tooltip |
+
+`Layers.configure({ Parent = instance, Prefix = "Name_" })` sends layers somewhere other than the player's PlayerGui (the Studio plugin uses CoreGui to preview screens in Edit mode), and `Layers.setEnabled(on)` shows or hides them all.

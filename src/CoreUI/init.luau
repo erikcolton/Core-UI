@@ -17,7 +17,7 @@ local Screens = script.Screens
 local Util = script.Util
 
 local CoreUI = {
-	Version = "0.1.0",
+	Version = "0.2.0",
 
 	Theme = require(script.Theme),
 	Manager = require(script.Manager),
