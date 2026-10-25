@@ -81,7 +81,7 @@ return {
 	},
 
 	buttons = {
-		gradient = true,
+		fill = "twoTone",
 		highlight = 0.22,
 		heights = { sm = 38, md = 52, lg = 64 },
 	},

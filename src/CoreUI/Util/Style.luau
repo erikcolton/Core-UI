@@ -114,13 +114,18 @@ function Style.color(theme: any, value: any, default: string): Color3
 	return lookup(theme.colors, value or default) or lookup(theme.colors, default) or theme.colors.text
 end
 
--- Fill a surface with a flat color, or with a two-tone gradient when gradient is true.
-function Style.fill(surface: any, color: Color3, gradient: boolean, highlight: number?)
+-- Fill a surface with a flat color or a gradient. mode is a buttons.fill token:
+-- "flat", "twoTone" (hard stop in the middle) or "gradient" (smooth, lighter at the top).
+-- true and false are accepted as "twoTone" and "flat".
+function Style.fill(surface: any, color: Color3, mode: (string | boolean)?, highlight: number?)
 	local existing = surface:FindFirstChild("Gradient")
-	if gradient then
+	local kind = if mode == true then "twoTone" elseif type(mode) == "string" then mode else "flat"
+	if kind == "twoTone" or kind == "gradient" then
 		surface.BackgroundColor3 = WHITE
 		local uiGradient = existing or Create("UIGradient", { Name = "Gradient", Rotation = 90, Parent = surface })
-		uiGradient.Color = Color.twoTone(color, highlight or 0.18)
+		uiGradient.Color = if kind == "twoTone"
+			then Color.twoTone(color, highlight or 0.18)
+			else Color.smooth(color, highlight or 0.18)
 	else
 		surface.BackgroundColor3 = color
 		if existing then

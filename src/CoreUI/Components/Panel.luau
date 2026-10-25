@@ -56,7 +56,8 @@ function Panel:_style(theme: any)
 
 	Style.corner(surface, radius)
 	local skinned = (not inset) and Style.skin(surface, theme.images.panel)
-	surface.BackgroundColor3 = base
+	local sheen = if inset or skinned then 0 else theme.effects.panelGradient
+	Style.fill(surface, base, if sheen > 0 then "gradient" else "flat", sheen)
 	surface.BackgroundTransparency = if skinned then 1 else theme.transparency[colorKey] or 0
 	Style.stroke(surface, if skinned then 0 else strokeThickness, theme.colors.stroke)
 

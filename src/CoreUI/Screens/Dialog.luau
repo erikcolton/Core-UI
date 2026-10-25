@@ -23,6 +23,9 @@ local Button = require(script.Parent.Parent.Components.Button)
 
 local Dialog = {}
 
+-- Answer functions of the dialogs on screen, so dismissAll can close them.
+local open: { [any]: boolean } = {}
+
 local function show(options: { [string]: any }, withCancel: boolean): boolean
 	local layer = Layers.get("Dialogs")
 	local result = Instance.new("BindableEvent")
@@ -100,8 +103,10 @@ local function show(options: { [string]: any }, withCancel: boolean): boolean
 			return
 		end
 		answered = true
+		open[answer] = nil
 		result:Fire(value)
 	end
+	open[answer] = true
 
 	local confirm = Button.new({
 		Text = options.ConfirmText or "OK",
@@ -136,8 +141,8 @@ local function show(options: { [string]: any }, withCancel: boolean): boolean
 	local theme = Theme.get()
 	backdrop.BackgroundColor3 = theme.colors.overlay
 	Tween.play(backdrop, { BackgroundTransparency = theme.transparency.overlay }, "normal")
-	popScale.Scale = theme.motion.openFrom
-	Tween.pop(popScale, { Scale = 1 })
+	local home = panel.Instance.Position
+	Tween.reveal(panel.Instance, popScale, home, true)
 	Sound.play("open")
 
 	local previousSelection = GuiService.SelectedObject
@@ -154,10 +159,14 @@ local function show(options: { [string]: any }, withCancel: boolean): boolean
 	end
 
 	Tween.play(backdrop, { BackgroundTransparency = 1 }, "fast")
-	local closing = Tween.play(popScale, { Scale = theme.motion.openFrom }, "fast", nil, Enum.EasingDirection.In)
-	closing.Completed:Once(function()
+	local closing = Tween.reveal(panel.Instance, popScale, home, false)
+	if closing then
+		closing.Completed:Once(function()
+			root:Destroy()
+		end)
+	else
 		root:Destroy()
-	end)
+	end
 	return value
 end
 
@@ -167,6 +176,13 @@ end
 
 function Dialog.alert(options: { [string]: any })
 	show(options, false)
+end
+
+-- Cancel every open dialog (confirm returns false).
+function Dialog.dismissAll()
+	for answer in table.clone(open) do
+		answer(false)
+	end
 end
 
 return Dialog

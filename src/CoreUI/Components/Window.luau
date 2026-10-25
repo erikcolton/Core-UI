@@ -45,6 +45,7 @@ function Window.new(props: { [string]: any }?)
 	})
 	self.Instance = self.Panel.Instance
 	self.Instance.Visible = false
+	self._home = self.Instance.Position
 	self._popScale = Create("UIScale", { Name = "PopScale", Parent = self.Instance })
 
 	local surface = self.Panel.Surface
@@ -115,10 +116,8 @@ function Window:Open()
 	end
 	self.IsOpen = true
 	self._closeToken += 1
-	local motion = Theme.get().motion
 	self.Instance.Visible = true
-	self._popScale.Scale = motion.openFrom
-	Tween.pop(self._popScale, { Scale = 1 })
+	Tween.reveal(self.Instance, self._popScale, self._home, true)
 	Sound.play("open")
 	self.Opened:Fire()
 end
@@ -130,13 +129,17 @@ function Window:Close()
 	self.IsOpen = false
 	self._closeToken += 1
 	local token = self._closeToken
-	local motion = Theme.get().motion
-	local tween = Tween.play(self._popScale, { Scale = motion.openFrom }, "fast", nil, Enum.EasingDirection.In)
-	tween.Completed:Once(function()
+	local function hide()
 		if self._closeToken == token then
 			self.Instance.Visible = false
 		end
-	end)
+	end
+	local tween = Tween.reveal(self.Instance, self._popScale, self._home, false)
+	if tween then
+		tween.Completed:Once(hide)
+	else
+		hide()
+	end
 	Sound.play("close")
 	self.Closed:Fire()
 end
